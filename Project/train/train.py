@@ -8,7 +8,6 @@ import pandas as pd
 import torch
 import torch.optim as optim
 import torch.utils.data
-
 from model import LSTMClassifier
 
 def model_fn(model_dir):
@@ -44,12 +43,9 @@ def model_fn(model_dir):
 
 def _get_train_data_loader(batch_size, training_dir):
     print("Get train data loader.")
-
     train_data = pd.read_csv(os.path.join(training_dir, "train.csv"), header=None, names=None)
-
     train_y = torch.from_numpy(train_data[[0]].values).float().squeeze()
     train_X = torch.from_numpy(train_data.drop([0], axis=1).values).long()
-
     train_ds = torch.utils.data.TensorDataset(train_X, train_y)
 
     return torch.utils.data.DataLoader(train_ds, batch_size=batch_size)
@@ -73,8 +69,7 @@ def train(model, train_loader, epochs, optimizer, loss_fn, device):
         model.train()
         total_loss = 0
         for batch in train_loader:         
-            batch_X, batch_y = batch
-            
+            batch_X, batch_y = batch            
             batch_X = batch_X.to(device)
             batch_y = batch_y.to(device)
             

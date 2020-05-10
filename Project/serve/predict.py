@@ -13,12 +13,9 @@ import torch.utils.data
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem.porter import *
-
 import re
 from bs4 import BeautifulSoup
-
 from model import LSTMClassifier
-
 from utils import review_to_words, convert_and_pad
 
 def model_fn(model_dir):
@@ -82,15 +79,12 @@ def predict_fn(input_data, model):
     data_len = None
     input_data_words = review_to_words(input_data)
     data_X, data_len = convert_and_pad(model.word_dict, input_data_words)
-    # data_X = pd.concat([pd.DataFrame(test_data_len), pd.DataFrame(test_data)], axis=1)
 
     # Using data_X and data_len we construct an appropriate input tensor. Remember
     # that our model expects input data of the form 'len, review[500]'.
-    # data_pack = np.hstack((data_len, data_X))
-    data_pack = np.hstack((data_len, data_X))
-    
-    data_pack = data_pack.reshape(1, -1)
-    
+
+    data_pack = np.hstack((data_len, data_X))   
+    data_pack = data_pack.reshape(1, -1)   
     data = torch.from_numpy(data_pack)
     data = data.to(device)
 
@@ -104,15 +98,13 @@ def predict_fn(input_data, model):
         output = model.forward(data)
         
     result = np.round(output.numpy())
-    # result = predictor.predict(data.values)
     print(result)
 
     return result
 
 def review_to_words(review):
     nltk.download("stopwords", quiet=True)
-    stemmer = PorterStemmer()
-    
+    stemmer = PorterStemmer()    
     text = BeautifulSoup(review, "html.parser").get_text() # Remove HTML tags
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower()) # Convert to lower case
     words = text.split() # Split string into words
